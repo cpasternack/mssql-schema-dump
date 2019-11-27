@@ -3,12 +3,26 @@
 Exports MS SQL Server database schema, that includes:
 
 1. DB
-  Schema, User Types, User Table Types, Triggers, Full Text Catalogues,
-  Full Text StopLists, Stored Procedures, Functions
+  - Schema
+  - User Types
+  - User Table Types
+  - Triggers
+  - Full Text Catalogues
+  - Full Text StopLists 
+  - Stored Procedures
+  - Functions
 2. DB.Tables
-  Schema, Triggers, Indexes, DRI, Statistics
+  - Schema
+  - Triggers
+  - Indexes
+  - DRI
+  - Statistics
 3. DB.Views
-  Schema, Triggers, Indexes, DRI, Statistics
+  - Schema
+  - Triggers
+  - Indexes
+  - DRI
+  - Statistics
 
 ## Usage:
 
