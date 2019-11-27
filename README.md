@@ -52,7 +52,7 @@ Options:
 
 This programme was written nearly 5-7 years ago now by the original author. 
 I needed a quick and dirty sql dumper without using MSSQL management studio from windows, now that MS SQL Server runs on linux.
-I have a fair few applications ported form .NET on MSVS and Windows to mono runtime on Linux under my belt, so this is a natural next step. 
+I have a fair few applications ported from .NET on MSVS and Windows to mono runtime on Linux under my belt, so this is a natural next step. 
 
 The code looks clean, easy to read, and is a great starting point. Let's improve on that!
 
