@@ -1,4 +1,4 @@
-##MS SQL schema dump v1.1.1
+## MS SQL schema dump v1.1.1
 
 Exports MS SQL Server database schema, that includes:
 
