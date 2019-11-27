@@ -65,6 +65,7 @@ The code looks clean, easy to read, and is a great starting point. Let's improve
     * WS Width (I work with non-latin alphabets)
     * UTF-8 encoded data (It's 2019, this was introduced in MS SQL Server 14 (2017))
   - add jenkins file for use with build environment
+  - create library in addition to binary
 
 ### License
 
