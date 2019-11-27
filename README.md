@@ -81,3 +81,4 @@ GPL-2.0, See: LICENSE file
   - changed local path for file saves to /tmp
   - added xmldoc comments
   - added license to file hearders
+  - recreated Solution files with mono Develop
