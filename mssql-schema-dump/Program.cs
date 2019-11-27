@@ -1,5 +1,5 @@
 ﻿//
-//  EmptyClass.cs
+//  Program.cs
 //
 //  Author:
 //       Cpasternack <Cpasternack@users.noreply.gitlab.com>
@@ -33,10 +33,11 @@ using Microsoft.SqlServer.Management.Smo;
 
 namespace MSSQLDump {
     class Program {
-        private static string HOST = "(local)";
+        
+        private static string HOST = "$HOST";
         private static string USER = "sa";
         private static string PASS = "sa";
-        private static string SavePath = @"C:\_SQL_SCHEMA_DUMP\";
+        private static string SavePath = "/tmp/mssql-schema-dump/";
         private static bool CleanDir = false;
         private static bool ExportStatistics = false;
         private static bool UseDAC = false;
@@ -109,8 +110,8 @@ namespace MSSQLDump {
                 Console.WriteLine( "-------------------------------------------------" );
 
                 //var schema = "dbo";
-                var filename = "";
-                var objPath = "";
+                //var filename = "";
+                //var objPath = "";
                 //System.Collections.Specialized.StringCollection cs = new System.Collections.Specialized.StringCollection();
                 //////////////////////////////////////////////////////////////////////////
                 //DB
@@ -252,8 +253,11 @@ namespace MSSQLDump {
         }
 
         #region Helpers
+        /// <summary>
+        /// Writes the help.
+        /// </summary>
         private static void WriteHelp() {
-            Console.WriteLine( "***MS SQL schema dump v1 Beta (http://github.com/georgekosmidis/mssql-schema-dump)***" );
+            Console.WriteLine( "MS SQL schema dump v1.1.1 (https://github.com/cpasternack/mssql-schema-dump)" );
             Console.WriteLine( "Exports MS SQL Server database schema, that includes:" );
             Console.WriteLine( "DB" );
             Console.WriteLine( "  Schema, User Types, User Table Types, Triggers, Full Text Catalogues," );
@@ -272,12 +276,19 @@ namespace MSSQLDump {
             Console.WriteLine( "     -u : username, defaults to sa" );
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
-            Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
             Console.WriteLine( "     -s : Also export statistics, defaults to false" );
             Console.WriteLine( "     -a : Use DAC to try decrypt encrypted objects, defaults to false" );
             Console.WriteLine( "     -b : Comma separated value of databases to export, defaults to empty string" );
+            Console.WriteLine("License: GPL-2.0");
             Console.ReadKey();
         }
+        /// <summary>
+        /// Reads the arguments.
+        /// </summary>
+        /// <returns><c>true</c>, if arguments was  read, <c>false</c> otherwise.</returns>
+        /// <param name="args">Arguments.</param>
         private static bool ReadArguments( string[] args ) {
             try {
                 for ( int i = 0; i < args.Count(); i++ ) {
@@ -331,6 +342,18 @@ namespace MSSQLDump {
             }
             return true;
         }
+        /// <summary>
+        /// Writes the SQLI nner.
+        /// </summary>
+        /// <returns><c>true</c>, if SQLI nner was writed, <c>false</c> otherwise.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="objType">Object type.</param>
+        /// <param name="objName">Object name.</param>
+        /// <param name="filePath">File path.</param>
+        /// <param name="o">O.</param>
+        /// <param name="so">So.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         private static bool WriteSQLInner<T>( string db, string schema, string objType, string objName, string filePath, T o, ScriptingOptions so ) where T : SqlSmoObject {
             if ( schema == "" )
                 schema = "dbo";
@@ -376,17 +399,40 @@ namespace MSSQLDump {
 
             return true;
         }
+        /// <summary>
+        /// Prepares the sql file.
+        /// </summary>
+        /// <returns>The sql file.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="objType">Object type.</param>
+        /// <param name="objName">Object name.</param>
+        /// <param name="objPath">Object path.</param>
+        /// <param name="filePrefix">File prefix.</param>
         private static string PrepareSqlFile( string db, string schema, string objType, string objName, string objPath, string filePrefix ) {
             filePrefix = filePrefix != "" ? filePrefix + "_" : filePrefix;
             var filePath = objPath + Path.DirectorySeparatorChar + pathify( filePrefix + objType + "_" + schema + "_" + objName ) + ".sql";
 
             return filePath;
         }
+        /// <summary>
+        /// Pathify the specified s.
+        /// </summary>
+        /// <returns>The pathify.</returns>
+        /// <param name="s">S.</param>
         private static string pathify( string s ) {
             foreach ( var c in System.IO.Path.GetInvalidFileNameChars() )
                 s = s.Replace( c, '_' );
             return s;
         }
+        /// <summary>
+        /// Sqls the comments.
+        /// </summary>
+        /// <returns>The comments.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="type">Type.</param>
+        /// <param name="name">Name.</param>
         private static string sqlComments( string db, string schema, string type, string name ) {
             var s = "--****************************************************" + Environment.NewLine;
             s += "--MS SQL schema dump v1 Beta" + Environment.NewLine;
@@ -400,6 +446,11 @@ namespace MSSQLDump {
             s += "--****************************************************" + Environment.NewLine + Environment.NewLine;
             return s;
         }
+        /// <summary>
+        /// Deletes the directory.
+        /// </summary>
+        /// <returns><c>true</c>, if directory was deleted, <c>false</c> otherwise.</returns>
+        /// <param name="target_dir">Target dir.</param>
         private static bool DeleteDirectory( string target_dir ) {
             string[] files = Directory.GetFiles( target_dir );
             string[] dirs = Directory.GetDirectories( target_dir );

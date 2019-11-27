@@ -1,6 +1,5 @@
 ﻿//
-//  EmptyClass.cs
-//
+//  _DB.cs
 //  Author:
 //       Cpasternack <Cpasternack@users.noreply.gitlab.com>
 //
