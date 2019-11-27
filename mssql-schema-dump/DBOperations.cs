@@ -1,5 +1,5 @@
 ﻿//
-//  _DB.cs
+//  DBOperations.cs
 //  Author:
 //       Cpasternack <Cpasternack@users.noreply.gitlab.com>
 //
@@ -29,15 +29,23 @@ using System.Data;
 using System.Text.RegularExpressions;
 
 namespace MSSQLDump {
-    class _DB {
+    /// <summary>
+    /// Db.
+    /// </summary>
+    class DBOperations {
         private SqlConnection cn = new SqlConnection();
         private SqlCommand cmd = new SqlCommand();
 
         private string _host = "";
         private string _user = "";
         private string _password = "";
-
-        public _DB( string host, string user, string password ) {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:MSSQLDump._DB"/> class.
+        /// </summary>
+        /// <param name="host">Host.</param>
+        /// <param name="user">User.</param>
+        /// <param name="password">Password.</param>
+        public DBOperations( string host, string user, string password ) {
             _host = host;
             _user = user;
             _password = password;
@@ -47,7 +55,9 @@ namespace MSSQLDump {
             cmd.CommandTimeout = 3600;
             cmd.Prepare();
         }
-
+        /// <summary>
+        /// Tries the enable dac.
+        /// </summary>
         public void TryEnableDAC() {
 
             cmd.CommandText = "exec sp_configure 'show advanced options', 1" + Environment.NewLine;
@@ -61,6 +71,9 @@ namespace MSSQLDump {
             cmd.ExecuteNonQuery();
 
         }
+        /// <summary>
+        /// Tries the disable dac.
+        /// </summary>
         public void TryDisableDAC() {
 
             cmd.CommandText = "exec sp_configure 'show advanced options', 0" + Environment.NewLine;
@@ -74,6 +87,10 @@ namespace MSSQLDump {
             cmd.ExecuteNonQuery();
 
         }
+        /// <summary>
+        /// Changes the db.
+        /// </summary>
+        /// <param name="db">Db.</param>
         public void ChangeDB( string db ) {
             cmd.CommandText = "USE " + db + ";";
 
@@ -142,14 +159,24 @@ namespace MSSQLDump {
         //            var dt = GetDatatable( cmd );
 
         //        }
+        /// <summary>
+        /// Gets the objects.
+        /// </summary>
+        /// <returns>The objects.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="type">Type.</param>
         public DataTable GetObjects( string db, string type ) {
             cmd.CommandText = "SELECT * FROM [" + db + "].dbo.sysobjects WHERE xtype = '" + type + "';";
             return this.GetDatatable( cmd );
         }
-
-        private DataTable GetDatatable( SqlCommand cmd ) {
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
+        /// <summary>
+        /// Gets the datatable.
+        /// </summary>
+        /// <returns>The datatable.</returns>
+        /// <param name="scmd">Cmd.</param>
+        private DataTable GetDatatable( SqlCommand scmd ) {
+            if (scmd.Connection.State == ConnectionState.Closed)
+                scmd.Connection.Open();
 
             SqlDataAdapter da = new SqlDataAdapter();
             da.SelectCommand = cmd;

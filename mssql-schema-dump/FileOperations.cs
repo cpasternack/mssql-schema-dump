@@ -1,5 +1,5 @@
 ﻿//
-//  csFile.cs
+//  FileOperations.cs
 //
 //  Author:
 //       Cpasternack <Cpasternack@users.noreply.gitlab.com>
@@ -27,13 +27,22 @@ using System.Text;
 using System.IO;
 
 namespace MSSQLDump {
-    class csFile {
+    /// <summary>
+    /// File operations.
+    /// </summary>
+    class FileOperations {
         public static string CreateFolder( string path, string folder ) {
             path = System.IO.Path.Combine( path, folder );
             if (!Directory.Exists( path ))
                 System.IO.Directory.CreateDirectory( path );
             return path;
         }
+        /// <summary>
+        /// Writes the file.
+        /// </summary>
+        /// <param name="filePath">File path.</param>
+        /// <param name="c">C.</param>
+        /// <param name="append">If set to <c>true</c> append.</param>
         public static void writeFile( string filePath, string c, bool append ) {
             string s = ReadFile( filePath );
             TextWriter tw = new StreamWriter( filePath );
@@ -47,7 +56,11 @@ namespace MSSQLDump {
                 tw.Close();
             }
         }
-
+        /// <summary>
+        /// Reads the file.
+        /// </summary>
+        /// <returns>The file.</returns>
+        /// <param name="filePath">File path.</param>
         public static string ReadFile( string filePath ) {
             byte[] buffer;
             try {
