@@ -60,10 +60,11 @@ The code looks clean, easy to read, and is a great starting point. Let's improve
 
   - continue extending case insensitive databases to include all collation possibilities
     * ~~CS~~
-    * AS Accented 
+    * AS Accented (accented latin characters are used in my work)
     * KS Kana (I work with non-latin alphabets)
     * WS Width (I work with non-latin alphabets)
-    * UTF-8 encoded data (It's 2019, this was introduced in MS SQL Server 14 (2017)
+    * UTF-8 encoded data (It's 2019, this was introduced in MS SQL Server 14 (2017))
+  - add jenkins file for use with build environment
 
 ### License
 
@@ -77,3 +78,5 @@ GPL-2.0, See: LICENSE file
   - incremented version to 1.1.1
   - no longer deleteing any files in any paths
   - changed local path for file saves to /tmp
+  - added xmldoc comments
+  - added license to file hearders
