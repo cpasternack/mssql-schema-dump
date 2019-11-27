@@ -31,13 +31,21 @@ Pass a junk parameter to start with default values shown below!
 `mssqldump -h data-source-host -u username -p password [-d path/for/files] [-c] [-s] [-a] [-b DB1[,DB2[,DB3]]]`
 
 Options:
+
 `-h : SQL server host, defaults to $HOST`
+
 `-u : username, defaults to sa`
+
 `-p : password, defaults to sa`
+
 `-d : Local path for saved files, defaults to /tmp/sql_schema_dump`
+
 `-c : ~~Delete all files and folders from local path, defaults to false~~`
+
 `-s : Also export statistics, defaults to false`
+
 `-a : Use DAC to try decrypt encrypted objects, defaults to false`
+
 `-b : Comma separated value of databases to export, defaults to empty string`
 
 ## Updates:
