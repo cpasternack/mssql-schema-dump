@@ -50,8 +50,10 @@ Options:
 
 ## Updates:
 
+11/2019:
 This programme was written nearly 5-7 years ago now by the original author. 
 I needed a quick and dirty sql dumper without using MSSQL management studio from windows, now that MS SQL Server runs on linux.
+Azure Data Studio is also a bit too heavy-handed for testing out development database layer nonsense in a pipeline as well.
 I have a fair few applications ported from .NET on MSVS and Windows to mono runtime on Linux under my belt, so this is a natural next step. 
 
 The code looks clean, easy to read, and is a great starting point. Let's improve on that!
