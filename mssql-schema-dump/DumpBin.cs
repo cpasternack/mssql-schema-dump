@@ -323,13 +323,13 @@ namespace MSSQLDump {
                             i++;
                             continue;
                         case "-c":
-                            CleanDir = true; 
+                            CleanDir = false; 
                             continue;
                         case "-s":
-                            ExportStatistics = true;
+                            ExportStatistics = false;
                             continue;
                         case "-a":
-                            UseDAC = true;
+                            UseDAC = false;
                             continue;
                         case "-b":
                             if ( args[i + 1].Substring( 0, 1 ) != "-" ) {
