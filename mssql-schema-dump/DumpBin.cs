@@ -70,9 +70,12 @@ namespace MSSQLDump {
                 try {
                     DB.TryEnableDAC();
                 }
-                catch {
-                    Console.WriteLine( "ERROR!" );
+                catch (Exception ex){
+                    //Console.WriteLine( "ERROR!" ); // Unhelpful
                     Console.WriteLine( "DAC cannot be enabled, retry without the option but encrypted objects will be omitted!" );
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                    Console.WriteLine(ex.TargetSite);
                     return;
                 }
 
@@ -85,11 +88,13 @@ namespace MSSQLDump {
                 cn.Close();
             }
             catch ( Exception ex ) {
-                Console.Clear();
-                Console.WriteLine( "ERROR!" );
-                Console.WriteLine( ex.Message );
+                //Console.Clear(); // Do not clear any console in *nixland
+                //Console.WriteLine( "ERROR!" ); // Unhelpful
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.TargetSite);
                 Console.WriteLine( "(Server:" + HOST + ", User:" + USER + ", PASS: " + PASS.Substring( 0, 1 ) + (new String( '*', PASS.Length - 2 )) + PASS.Substring( PASS.Count() - 1, 1 ) + ")" );
-                Console.ReadKey();
+                //Console.ReadKey(); // Don't do this in *nixland
                 return;
             }
             var sc = new ServerConnection( cn );
@@ -250,9 +255,9 @@ namespace MSSQLDump {
             if ( UseDAC )
                 DB.TryDisableDAC();
 
-            Console.WriteLine( Environment.NewLine );
+            //Console.WriteLine( Environment.NewLine );
             Console.WriteLine( "Done!" );
-            Console.ReadKey();
+            //Console.ReadKey(); // Don't do this in *nixland
 
         }
 
@@ -318,7 +323,7 @@ namespace MSSQLDump {
                             i++;
                             continue;
                         case "-c":
-                            CleanDir = true;
+                            CleanDir = true; 
                             continue;
                         case "-s":
                             ExportStatistics = true;
@@ -334,13 +339,16 @@ namespace MSSQLDump {
                     }
                 }
             }
-            catch {
-                Console.Clear();
-                Console.WriteLine( "ERROR!" );
+            catch (Exception ex) {
+                //Console.Clear(); // Don't do this in *nixland
+                //Console.WriteLine( "ERROR!" ); // Unhelpful
                 Console.WriteLine( "You have an error in your arguments passed." );
-                Console.WriteLine( "Press any key to read help" );
-                Console.ReadKey();
-                Console.Clear();
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.TargetSite);
+                //Console.WriteLine( "Press any key to read help" );
+                //Console.ReadKey(); // Don't do this in *nixland
+                //Console.Clear(); // Don't do this in *nixland
                 WriteHelp();
                 return false;
             }
