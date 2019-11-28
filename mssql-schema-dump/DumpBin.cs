@@ -42,7 +42,7 @@ namespace mssqldump {
         private static string USER = "sa";
         private static string PASS = "sa";
         private static string SavePath = "/tmp/mssql-schema-dump/";
-        private static bool CleanDir = false;
+        //private static bool CleanDir = false; // TODO remove
         private static bool ExportStatistics = false;
         private static bool UseDAC = false;
         private static List<string> DBs = new List<string>();
@@ -82,7 +82,8 @@ namespace mssqldump {
                 DB = new DBOperations( "ADMIN:" + HOST, USER, PASS );
                 //Console.Clear(); // Don't do this in *nixland // TODO remove
             }
-            var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS + ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
+            var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS +
+                                       ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
             try {
                 cn.Open();
                 cn.Close();
@@ -93,7 +94,8 @@ namespace mssqldump {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.TargetSite);
-                Console.WriteLine( "(Server:" + HOST + ", User:" + USER + ", PASS: " + PASS.Substring( 0, 1 ) + (new String( '*', PASS.Length - 2 )) + PASS.Substring( PASS.Count() - 1, 1 ) + ")" );
+                Console.WriteLine( "(Server:" + HOST + ", User:" + USER + ", PASS: " +
+                                  PASS.Substring( 0, 1 ) + (new String( '*', PASS.Length - 2 )) + PASS.Substring( PASS.Count() - 1, 1 ) + ")" );
                 //Console.ReadKey(); // Don't do this in *nixland // TODO remove
                 return;
             }
@@ -289,7 +291,7 @@ namespace mssqldump {
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
             //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" ); // TODO remove
-            Console.WriteLine( "     -c : inert; no action; defaults to false" );
+            Console.WriteLine( "     -c : inert; no action; depricated" );
             Console.WriteLine( "     -s : Also export statistics, defaults to false" );
             Console.WriteLine( "     -a : Use DAC to try decrypt encrypted objects, defaults to false" );
             Console.WriteLine( "     -b : Comma separated value of databases to export, defaults to empty string" );
@@ -326,7 +328,8 @@ namespace mssqldump {
                             i++;
                             continue;
                         case "-c":
-                            CleanDir = false; 
+                            //CleanDir = false; // TODO remove
+                            Console.WriteLine("'-c' Option not in use");
                             continue;
                         case "-s":
                             ExportStatistics = false;
