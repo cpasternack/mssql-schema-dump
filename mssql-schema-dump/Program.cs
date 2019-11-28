@@ -1,4 +1,27 @@
-﻿using System;
+﻿//
+//  Program.cs
+//
+//  Author:
+//       Cpasternack <Cpasternack@users.noreply.gitlab.com>
+//
+//  Copyright (c) 2019 George Kosmidis
+//
+//  This program is free software; you can redistribute it and/or modify
+//  it under the terms of the GNU General Public License as published by
+//  the Free Software Foundation; either version 2 of the License, or
+//  (at your option) any later version.
+//
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+//  GNU General Public License for more details.
+//
+//  You should have received a copy of the GNU General Public License
+//  along with this program; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+//
+
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,15 +33,16 @@ using Microsoft.SqlServer.Management.Smo;
 
 namespace MSSQLDump {
     class Program {
-        private static string HOST = "(local)";
+        
+        private static string HOST = "$HOST";
         private static string USER = "sa";
         private static string PASS = "sa";
-        private static string SavePath = @"C:\_SQL_SCHEMA_DUMP\";
+        private static string SavePath = "/tmp/mssql-schema-dump/";
         private static bool CleanDir = false;
         private static bool ExportStatistics = false;
         private static bool UseDAC = false;
         private static List<string> DBs = new List<string>();
-        private static _DB DB = new _DB( HOST, USER, PASS );
+        private static DBOperations DB = new DBOperations( HOST, USER, PASS );
 
         static void Main( string[] args ) {
             if ( args.Count() == 0 ) {
@@ -48,7 +72,7 @@ namespace MSSQLDump {
                     return;
                 }
 
-                DB = new _DB( "ADMIN:" + HOST, USER, PASS );
+                DB = new DBOperations( "ADMIN:" + HOST, USER, PASS );
                 Console.Clear();
             }
             var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS + ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
@@ -68,7 +92,7 @@ namespace MSSQLDump {
             Server server = new Server( sc );
 
             //START
-            SavePath = csFile.CreateFolder( SavePath, pathify( HOST ) );
+            SavePath = FileOperations.CreateFolder( SavePath, pathify( HOST ) );
 
             //SERVER
             var filePath = PrepareSqlFile( "*", "", "SERVER", HOST, SavePath, "" );
@@ -79,15 +103,15 @@ namespace MSSQLDump {
                     continue;
                 if ( DBs.Count() > 0 && !DBs.Contains( db.Name.ToLower() ) )
                     continue;
-                var dbPath = csFile.CreateFolder( SavePath, pathify( db.Name ) );
+                var dbPath = FileOperations.CreateFolder( SavePath, pathify( db.Name ) );
 
                 Console.WriteLine( "=================================================" );
                 Console.WriteLine( "DB: " + db.Name );
                 Console.WriteLine( "-------------------------------------------------" );
 
                 //var schema = "dbo";
-                var filename = "";
-                var objPath = "";
+                //var filename = "";
+                //var objPath = "";
                 //System.Collections.Specialized.StringCollection cs = new System.Collections.Specialized.StringCollection();
                 //////////////////////////////////////////////////////////////////////////
                 //DB
@@ -104,7 +128,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB USER TYPES
-                currentPath = csFile.CreateFolder( dbPath, pathify( "UTYPE" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "UTYPE" ) );
                 foreach ( UserDefinedType o in db.UserDefinedTypes ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "UTYPE", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedType>( db.Name, o.Schema, "UTYPE", o.Name, filePath, o, ScriptOption.Default );
@@ -112,7 +136,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB TRIGGERS
-                currentPath = csFile.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
                 foreach ( DatabaseDdlTrigger o in db.Triggers.Cast<DatabaseDdlTrigger>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "TRIGGER", o.Name, currentPath, "" );
                     WriteSQLInner<DatabaseDdlTrigger>( db.Name, "dbo", "TRIGGER", o.Name, filePath, o, ScriptOption.Default );
@@ -120,7 +144,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB USER TABLE TYPES
-                currentPath = csFile.CreateFolder( dbPath, pathify( "TTYPES" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "TTYPES" ) );
                 foreach ( UserDefinedTableType o in db.UserDefinedTableTypes ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "TTYPES", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedTableType>( db.Name, o.Schema, "TTYPES", o.Name, filePath, o, ScriptOption.Default );
@@ -128,7 +152,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB FULLTEXT CATALOGS
-                currentPath = csFile.CreateFolder( dbPath, pathify( "FTC" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FTC" ) );
                 foreach ( FullTextCatalog o in db.FullTextCatalogs ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "FTC", o.Name, currentPath, "" );
                     WriteSQLInner<FullTextCatalog>( db.Name, "dbo", "FTC", o.Name, filePath, o, ScriptOption.Default );
@@ -136,7 +160,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB FULLTEXT STOPLISTS
-                currentPath = csFile.CreateFolder( dbPath, pathify( "FTL" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FTL" ) );
                 foreach ( FullTextStopList o in db.FullTextStopLists ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "FTL", o.Name, currentPath, "" );
                     WriteSQLInner<FullTextStopList>( db.Name, "dbo", "FTL", o.Name, filePath, o, ScriptOption.Default );
@@ -144,7 +168,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //STORED PROCEDURES
-                currentPath = csFile.CreateFolder( dbPath, pathify( "PROCEDURE" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "PROCEDURE" ) );
                 foreach ( StoredProcedure o in db.StoredProcedures.Cast<StoredProcedure>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "PROCEDURE", o.Name, currentPath, "" );
                     WriteSQLInner<StoredProcedure>( db.Name, o.Schema, "PROCEDURE", o.Name, filePath, o, ScriptOption.Default );
@@ -152,7 +176,7 @@ namespace MSSQLDump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //FUNCTIONS
-                currentPath = csFile.CreateFolder( dbPath, pathify( "FUNCTION" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FUNCTION" ) );
                 foreach ( UserDefinedFunction o in db.UserDefinedFunctions.Cast<UserDefinedFunction>().Where( oo => oo.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "FUNCTION", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedFunction>( db.Name, o.Schema, "FUNCTION", o.Name, filePath, o, ScriptOption.Default );
@@ -162,7 +186,7 @@ namespace MSSQLDump {
                 //TABLE
                 foreach ( Table o in db.Tables.Cast<Table>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
 
-                    currentPath = csFile.CreateFolder( dbPath, pathify( "TABLE" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TABLE" ) );
                     filePath = PrepareSqlFile( db.Name, o.Schema, "TABLE", o.Name, currentPath, "" );
                     WriteSQLInner<Table>( db.Name, o.Schema, "TABLE", o.Name, filePath, o, ScriptOption.Default );
                     WriteSQLInner<Table>( db.Name, o.Schema, "TABLE", o.Name, filePath, o, ScriptOption.Indexes );
@@ -171,7 +195,7 @@ namespace MSSQLDump {
 
                     //////////////////////////////////////////////////////////////////////////
                     //TABLE TRIGGERS
-                    currentPath = csFile.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
                     foreach ( Trigger ot in o.Triggers.Cast<Trigger>().AsQueryable().Where( oo => oo.IsSystemObject == false ) ) {
                         filePath = PrepareSqlFile( db.Name, o.Schema, "TRIGGER", ot.Name, currentPath, "TABLE_" + o.Name );
                         WriteSQLInner<Trigger>( db.Name, o.Schema, "TRIGGER", ot.Name, filePath, ot, ScriptOption.Default );
@@ -180,7 +204,7 @@ namespace MSSQLDump {
                     //////////////////////////////////////////////////////////////////////////
                     //TABLE STATISTICS
                     if ( ExportStatistics ) {
-                        currentPath = csFile.CreateFolder( dbPath, pathify( "STATISTIC" ) );
+                        currentPath = FileOperations.CreateFolder( dbPath, pathify( "STATISTIC" ) );
                         foreach ( Statistic ot in o.Statistics.Cast<Statistic>().AsQueryable() ) {
                             filePath = PrepareSqlFile( db.Name, o.Schema, "STATISTIC", ot.Name, currentPath, "TABLE_" + o.Name );
                             WriteSQLInner<Statistic>( db.Name, o.Schema, "STATISTIC", ot.Name, filePath, ot, ScriptOption.OptimizerData );
@@ -192,7 +216,7 @@ namespace MSSQLDump {
                 //VIEWS
                 foreach ( View o in db.Views.Cast<View>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
 
-                    currentPath = csFile.CreateFolder( dbPath, pathify( "VIEW" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "VIEW" ) );
                     filePath = PrepareSqlFile( db.Name, o.Schema, "VIEW", o.Name, currentPath, "" );
                     WriteSQLInner<View>( db.Name, o.Schema, "VIEW", o.Name, filePath, o, ScriptOption.Default );
                     WriteSQLInner<View>( db.Name, o.Schema, "VIEW", o.Name, filePath, o, ScriptOption.Indexes );
@@ -200,7 +224,7 @@ namespace MSSQLDump {
 
                     //////////////////////////////////////////////////////////////////////////
                     //VIEW TRIGGERS
-                    currentPath = csFile.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
                     foreach ( Trigger ot in o.Triggers.Cast<Trigger>().AsQueryable().Where( oo => oo.IsSystemObject == false ) ) {
                         filePath = PrepareSqlFile( db.Name, o.Schema, "TRIGGER", ot.Name, currentPath, "VIEW_" + o.Name );
                         WriteSQLInner<Trigger>( db.Name, o.Schema, "TRIGGER", ot.Name, filePath, ot, ScriptOption.Default );
@@ -209,7 +233,7 @@ namespace MSSQLDump {
                     //////////////////////////////////////////////////////////////////////////
                     //VIEW STATISTICS
                     if ( ExportStatistics ) {
-                        currentPath = csFile.CreateFolder( dbPath, pathify( "STATISTIC" ) );
+                        currentPath = FileOperations.CreateFolder( dbPath, pathify( "STATISTIC" ) );
                         foreach ( Statistic ot in o.Statistics.Cast<Statistic>().AsQueryable() ) {
                             filePath = PrepareSqlFile( db.Name, o.Schema, "STATISTIC", ot.Name, currentPath, "VIEW_" + o.Name );
                             WriteSQLInner<Statistic>( db.Name, o.Schema, "STATISTIC", ot.Name, filePath, ot, ScriptOption.OptimizerData );
@@ -229,8 +253,11 @@ namespace MSSQLDump {
         }
 
         #region Helpers
+        /// <summary>
+        /// Writes the help.
+        /// </summary>
         private static void WriteHelp() {
-            Console.WriteLine( "***MS SQL schema dump v1 Beta (http://github.com/georgekosmidis/mssql-schema-dump)***" );
+            Console.WriteLine( "MS SQL schema dump v1.1.1 (https://github.com/cpasternack/mssql-schema-dump)" );
             Console.WriteLine( "Exports MS SQL Server database schema, that includes:" );
             Console.WriteLine( "DB" );
             Console.WriteLine( "  Schema, User Types, User Table Types, Triggers, Full Text Catalogues," );
@@ -249,12 +276,19 @@ namespace MSSQLDump {
             Console.WriteLine( "     -u : username, defaults to sa" );
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
-            Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
             Console.WriteLine( "     -s : Also export statistics, defaults to false" );
             Console.WriteLine( "     -a : Use DAC to try decrypt encrypted objects, defaults to false" );
             Console.WriteLine( "     -b : Comma separated value of databases to export, defaults to empty string" );
+            Console.WriteLine("License: GPL-2.0");
             Console.ReadKey();
         }
+        /// <summary>
+        /// Reads the arguments.
+        /// </summary>
+        /// <returns><c>true</c>, if arguments was  read, <c>false</c> otherwise.</returns>
+        /// <param name="args">Arguments.</param>
         private static bool ReadArguments( string[] args ) {
             try {
                 for ( int i = 0; i < args.Count(); i++ ) {
@@ -308,6 +342,18 @@ namespace MSSQLDump {
             }
             return true;
         }
+        /// <summary>
+        /// Writes the SQLI nner.
+        /// </summary>
+        /// <returns><c>true</c>, if SQLI nner was writed, <c>false</c> otherwise.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="objType">Object type.</param>
+        /// <param name="objName">Object name.</param>
+        /// <param name="filePath">File path.</param>
+        /// <param name="o">O.</param>
+        /// <param name="so">So.</param>
+        /// <typeparam name="T">The 1st type parameter.</typeparam>
         private static bool WriteSQLInner<T>( string db, string schema, string objType, string objName, string filePath, T o, ScriptingOptions so ) where T : SqlSmoObject {
             if ( schema == "" )
                 schema = "dbo";
@@ -346,29 +392,53 @@ namespace MSSQLDump {
                     ts += s + Environment.NewLine;
                 if ( !String.IsNullOrWhiteSpace( ts.Trim() ) ) {
                     if ( !File.Exists( filePath ) )
-                        csFile.writeFile( filePath, sqlComments( db, schema, objType, objName ), true );
-                    csFile.writeFile( filePath, ts + ";" + Environment.NewLine, true );
+                        FileOperations.writeFile( filePath, sqlComments( db, schema, objType, objName ), true );
+                    FileOperations.writeFile( filePath, ts + ";" + Environment.NewLine, true );
                 }
             }
 
             return true;
         }
+        /// <summary>
+        /// Prepares the sql file.
+        /// </summary>
+        /// <returns>The sql file.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="objType">Object type.</param>
+        /// <param name="objName">Object name.</param>
+        /// <param name="objPath">Object path.</param>
+        /// <param name="filePrefix">File prefix.</param>
         private static string PrepareSqlFile( string db, string schema, string objType, string objName, string objPath, string filePrefix ) {
             filePrefix = filePrefix != "" ? filePrefix + "_" : filePrefix;
             var filePath = objPath + Path.DirectorySeparatorChar + pathify( filePrefix + objType + "_" + schema + "_" + objName ) + ".sql";
 
             return filePath;
         }
+        /// <summary>
+        /// Pathify the specified s.
+        /// </summary>
+        /// <returns>The pathify.</returns>
+        /// <param name="s">S.</param>
         private static string pathify( string s ) {
             foreach ( var c in System.IO.Path.GetInvalidFileNameChars() )
                 s = s.Replace( c, '_' );
             return s;
         }
+        /// <summary>
+        /// Sqls the comments.
+        /// </summary>
+        /// <returns>The comments.</returns>
+        /// <param name="db">Db.</param>
+        /// <param name="schema">Schema.</param>
+        /// <param name="type">Type.</param>
+        /// <param name="name">Name.</param>
         private static string sqlComments( string db, string schema, string type, string name ) {
             var s = "--****************************************************" + Environment.NewLine;
-            s += "--MS SQL schema dump v1 Beta" + Environment.NewLine;
-            s += "--Latest Version on GitHub: http://github.com/georgekosmidis/mssql-schema-dump" + Environment.NewLine;
-            s += "--George Kosmidis <www.georgekosmidis.com>" + Environment.NewLine;
+            s += "--MS SQL schema dump v1.1.1" + Environment.NewLine;
+            s += "--Mono Runtime port by Cpasternack" + Environment.NewLine;
+            s += "--Latest Version on GitHub: https://github.com/cpasternack/mssql-schema-dump" + Environment.NewLine;
+            s += "--Original author: George Kosmidis <www.georgekosmidis.com>" + Environment.NewLine;
             s += "-------------------------------------------------------" + Environment.NewLine;
             s += "--DB: " + db + Environment.NewLine;
             s += "--SCHEMA: " + schema + Environment.NewLine;
@@ -377,6 +447,11 @@ namespace MSSQLDump {
             s += "--****************************************************" + Environment.NewLine + Environment.NewLine;
             return s;
         }
+        /// <summary>
+        /// Deletes the directory.
+        /// </summary>
+        /// <returns><c>true</c>, if directory was deleted, <c>false</c> otherwise.</returns>
+        /// <param name="target_dir">Target dir.</param>
         private static bool DeleteDirectory( string target_dir ) {
             string[] files = Directory.GetFiles( target_dir );
             string[] dirs = Directory.GetDirectories( target_dir );
