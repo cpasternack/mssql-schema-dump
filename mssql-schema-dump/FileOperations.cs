@@ -81,7 +81,7 @@ namespace MSSQLDump {
                 finally {
                     fileStream.Close();
                 }
-                System.Text.Encoding enc = System.Text.Encoding.UTF8;
+                System.Text.Encoding enc = System.Text.Encoding.UTF8; // FIXME Assumption
                 return enc.GetString( buffer );
             }
             catch {
