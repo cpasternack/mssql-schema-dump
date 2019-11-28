@@ -40,7 +40,7 @@ Options:
 
 `-d : Local path for saved files, defaults to /tmp/sql_schema_dump`
 
-`-c : ~~Delete all files and folders from local path, defaults to false~~`
+~~-c : Delete all files and folders from local path, defaults to false~~
 
 `-s : Also export statistics, defaults to false`
 
@@ -65,7 +65,8 @@ The code looks clean, easy to read, and is a great starting point. Let's improve
     * WS Width (I work with non-latin alphabets)
     * UTF-8 encoded data (It's 2019, this was introduced in MS SQL Server 14 (2017))
   - add jenkins file for use with build environment
-  - create library in addition to binary
+  - create library in addition to binary so we can call our tool from another programme
+  - dump out a nuget package for our internal nuget repo
 
 ### License
 
@@ -73,6 +74,7 @@ GPL-2.0, See: LICENSE file
 
 ### Changelog:
 
+11/2019
   - removed binaries in top level repo
   - porting to mono; making use of \*nix path referencing
   - changed README.md tags to markdown
@@ -81,4 +83,4 @@ GPL-2.0, See: LICENSE file
   - changed local path for file saves to /tmp
   - added xmldoc comments
   - added license to file hearders
-  - recreated Solution files with mono Develop
+  - re-created solution files with mono Develop latest
