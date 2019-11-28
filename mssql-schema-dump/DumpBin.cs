@@ -286,7 +286,7 @@ namespace mssqldump {
             Console.WriteLine( "       mssqldump [-d path/for/files] [-c] [-s] [-a] [-b DB1[,DB2[,DB3]]]" );
             Console.WriteLine( "" );
             Console.WriteLine( "Options:" );
-            Console.WriteLine( "     -h : SQL server host, defaults to (local)" );
+            Console.WriteLine( "     -h : SQL server host, defaults to /tmp/mssql-schema-dump/" );
             Console.WriteLine( "     -u : username, defaults to sa" );
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
