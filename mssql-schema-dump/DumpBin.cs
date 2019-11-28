@@ -35,7 +35,7 @@ using System.Threading;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
-namespace MSSQLDump {
+namespace mssqldump {
     class DumpBin {
         
         private static string HOST = "$HOST";

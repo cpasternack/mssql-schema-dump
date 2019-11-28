@@ -31,7 +31,7 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Text.RegularExpressions;
 
-namespace MSSQLDump {
+namespace mssqldump {
     /// <summary>
     /// Db.
     /// </summary>
