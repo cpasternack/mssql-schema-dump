@@ -37,7 +37,7 @@ namespace mssqldump {
     /// </summary>
     class DBOperations {
         private SqlConnection cn = new SqlConnection();
-        private SqlCommand cmd = new SqlCommand();
+        private SqlCommand sqlCMD = new SqlCommand();
 
         private string _host = "";
         private string _user = "";
@@ -54,24 +54,24 @@ namespace mssqldump {
             _password = password;
 
             cn.ConnectionString = "packet size=4096;user id=" + _user + ";Password=" + _password + ";data source=" + _host + ";persist security info=True;initial catalog=master;";
-            cmd.Connection = cn;
-            cmd.CommandTimeout = 3600;
-            cmd.Prepare();
+            sqlCMD.Connection = cn;
+            sqlCMD.CommandTimeout = 3600;
+            sqlCMD.Prepare();
         }
         /// <summary>
         /// Tries the enable dac.
         /// </summary>
         public void TryEnableDAC() {
 
-            cmd.CommandText = "exec sp_configure 'show advanced options', 1" + Environment.NewLine;
-            cmd.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
-            cmd.CommandText += "exec sp_configure 'remote admin connections', 1" + Environment.NewLine;
-            cmd.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
+            sqlCMD.CommandText = "exec sp_configure 'show advanced options', 1" + Environment.NewLine;
+            sqlCMD.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
+            sqlCMD.CommandText += "exec sp_configure 'remote admin connections', 1" + Environment.NewLine;
+            sqlCMD.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
 
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
+            if (sqlCMD.Connection.State == ConnectionState.Closed)
+                sqlCMD.Connection.Open();
 
-            cmd.ExecuteNonQuery();
+            sqlCMD.ExecuteNonQuery();
 
         }
         /// <summary>
@@ -79,15 +79,15 @@ namespace mssqldump {
         /// </summary>
         public void TryDisableDAC() {
 
-            cmd.CommandText = "exec sp_configure 'show advanced options', 0" + Environment.NewLine;
-            cmd.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
-            cmd.CommandText += "exec sp_configure 'remote admin connections', 0" + Environment.NewLine;
-            cmd.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
+            sqlCMD.CommandText = "exec sp_configure 'show advanced options', 0" + Environment.NewLine;
+            sqlCMD.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
+            sqlCMD.CommandText += "exec sp_configure 'remote admin connections', 0" + Environment.NewLine;
+            sqlCMD.CommandText += "RECONFIGURE WITH OVERRIDE" + Environment.NewLine;
 
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
+            if (sqlCMD.Connection.State == ConnectionState.Closed)
+                sqlCMD.Connection.Open();
 
-            cmd.ExecuteNonQuery();
+            sqlCMD.ExecuteNonQuery();
 
         }
         /// <summary>
@@ -95,12 +95,12 @@ namespace mssqldump {
         /// </summary>
         /// <param name="db">Db.</param>
         public void ChangeDB( string db ) {
-            cmd.CommandText = "USE " + db + ";";
+            sqlCMD.CommandText = "USE " + db + ";";
 
-            if (cmd.Connection.State == ConnectionState.Closed)
-                cmd.Connection.Open();
+            if (sqlCMD.Connection.State == ConnectionState.Closed)
+                sqlCMD.Connection.Open();
 
-            cmd.ExecuteNonQuery();
+            sqlCMD.ExecuteNonQuery();
         }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace mssqldump {
         /// <param name="objType">VIEW, PROCEDURE, TRIGGER</param>
         /// <returns></returns>
         public DataTable GetDecryptedObject( string objName, string objType ) {
-            cmd.CommandText = @"DECLARE @encrypted NVARCHAR(MAX)
+            sqlCMD.CommandText = @"DECLARE @encrypted NVARCHAR(MAX)
                                 SET @encrypted = ( 
 	                                SELECT TOP 1 imageval 
 	                                FROM sys.sysobjvalues
@@ -153,7 +153,7 @@ namespace mssqldump {
                                  SET @cnt = @cnt + 1
                                 END
                                 SELECT @decryptedMessage AS [script]";
-            return this.GetDatatable( cmd );
+            return this.GetDatatable( sqlCMD );
         }
         //        public void Test() {
         //            cmd.CommandText = @"SELECT * 
@@ -169,8 +169,8 @@ namespace mssqldump {
         /// <param name="db">Db.</param>
         /// <param name="type">Type.</param>
         public DataTable GetObjects( string db, string type ) {
-            cmd.CommandText = "SELECT * FROM [" + db + "].dbo.sysobjects WHERE xtype = '" + type + "';";
-            return this.GetDatatable( cmd );
+            sqlCMD.CommandText = "SELECT * FROM [" + db + "].dbo.sysobjects WHERE xtype = '" + type + "';";
+            return this.GetDatatable( sqlCMD );
         }
         /// <summary>
         /// Gets the datatable.
@@ -182,11 +182,11 @@ namespace mssqldump {
                 scmd.Connection.Open();
 
             SqlDataAdapter da = new SqlDataAdapter();
-            da.SelectCommand = cmd;
+            da.SelectCommand = sqlCMD;
             DataTable dt = new DataTable();
             da.Fill( dt );
 
-            cmd.Connection.Close();
+            sqlCMD.Connection.Close();
 
             return dt;
         }
