@@ -36,7 +36,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 
 namespace MSSQLDump {
-    class Program {
+    class DumpBin {
         
         private static string HOST = "$HOST";
         private static string USER = "sa";
