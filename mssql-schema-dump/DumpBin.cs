@@ -55,14 +55,14 @@ namespace mssqldump {
             }
             if ( !ReadArguments( args ) )
                 return;
-            //Clean Dir
-            if ( CleanDir && Directory.Exists( SavePath + Path.DirectorySeparatorChar + pathify( HOST ) ) ) {
-                Console.WriteLine( "Cleaning Directory '" + SavePath + Path.DirectorySeparatorChar + pathify( HOST ) + "'" );
-                var b = DeleteDirectory( SavePath + Path.DirectorySeparatorChar + pathify( HOST ) );
-                if ( !b )
-                    return;
-                Console.Clear();
-            }
+            //Clean Dir // TODO remove; never cleanup in programme
+            //if ( CleanDir && Directory.Exists( SavePath + Path.DirectorySeparatorChar + pathify( HOST ) ) ) {
+            //    Console.WriteLine( "Cleaning Directory '" + SavePath + Path.DirectorySeparatorChar + pathify( HOST ) + "'" );
+            //  var b = DeleteDirectory( SavePath + Path.DirectorySeparatorChar + pathify( HOST ) );
+            //    if ( !b )
+            //        return;
+            //    Console.Clear(); // Don't do this in *nixland // TODO remove
+            //}
 
             //Use DAC
             if ( UseDAC ) {
@@ -78,9 +78,9 @@ namespace mssqldump {
                     Console.WriteLine(ex.TargetSite);
                     return;
                 }
-
+                // TODO create Identity object to pass
                 DB = new DBOperations( "ADMIN:" + HOST, USER, PASS );
-                Console.Clear();
+                //Console.Clear(); // Don't do this in *nixland // TODO remove
             }
             var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS + ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
             try {
@@ -101,7 +101,7 @@ namespace mssqldump {
             Server server = new Server( sc );
 
             //START
-            SavePath = FileOperations.CreateFolder( SavePath, pathify( HOST ) );
+            SavePath = FileOperations.CreateFolder( SavePath, Pathify( HOST ) );
 
             //SERVER
             var filePath = PrepareSqlFile( "*", "", "SERVER", HOST, SavePath, "" );
@@ -112,7 +112,7 @@ namespace mssqldump {
                     continue;
                 if ( DBs.Count() > 0 && !DBs.Contains( db.Name.ToLower() ) )
                     continue;
-                var dbPath = FileOperations.CreateFolder( SavePath, pathify( db.Name ) );
+                var dbPath = FileOperations.CreateFolder( SavePath, Pathify( db.Name ) );
 
                 Console.WriteLine( "=================================================" );
                 Console.WriteLine( "DB: " + db.Name );
@@ -137,7 +137,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB USER TYPES
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "UTYPE" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "UTYPE" ) );
                 foreach ( UserDefinedType o in db.UserDefinedTypes ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "UTYPE", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedType>( db.Name, o.Schema, "UTYPE", o.Name, filePath, o, ScriptOption.Default );
@@ -145,7 +145,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB TRIGGERS
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "TRIGGER" ) );
                 foreach ( DatabaseDdlTrigger o in db.Triggers.Cast<DatabaseDdlTrigger>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "TRIGGER", o.Name, currentPath, "" );
                     WriteSQLInner<DatabaseDdlTrigger>( db.Name, "dbo", "TRIGGER", o.Name, filePath, o, ScriptOption.Default );
@@ -153,7 +153,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB USER TABLE TYPES
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "TTYPES" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "TTYPES" ) );
                 foreach ( UserDefinedTableType o in db.UserDefinedTableTypes ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "TTYPES", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedTableType>( db.Name, o.Schema, "TTYPES", o.Name, filePath, o, ScriptOption.Default );
@@ -161,7 +161,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB FULLTEXT CATALOGS
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FTC" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "FTC" ) );
                 foreach ( FullTextCatalog o in db.FullTextCatalogs ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "FTC", o.Name, currentPath, "" );
                     WriteSQLInner<FullTextCatalog>( db.Name, "dbo", "FTC", o.Name, filePath, o, ScriptOption.Default );
@@ -169,7 +169,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //DB FULLTEXT STOPLISTS
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FTL" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "FTL" ) );
                 foreach ( FullTextStopList o in db.FullTextStopLists ) {
                     filePath = PrepareSqlFile( db.Name, "dbo", "FTL", o.Name, currentPath, "" );
                     WriteSQLInner<FullTextStopList>( db.Name, "dbo", "FTL", o.Name, filePath, o, ScriptOption.Default );
@@ -177,7 +177,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //STORED PROCEDURES
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "PROCEDURE" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "PROCEDURE" ) );
                 foreach ( StoredProcedure o in db.StoredProcedures.Cast<StoredProcedure>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "PROCEDURE", o.Name, currentPath, "" );
                     WriteSQLInner<StoredProcedure>( db.Name, o.Schema, "PROCEDURE", o.Name, filePath, o, ScriptOption.Default );
@@ -185,7 +185,7 @@ namespace mssqldump {
 
                 //////////////////////////////////////////////////////////////////////////
                 //FUNCTIONS
-                currentPath = FileOperations.CreateFolder( dbPath, pathify( "FUNCTION" ) );
+                currentPath = FileOperations.CreateFolder( dbPath, Pathify( "FUNCTION" ) );
                 foreach ( UserDefinedFunction o in db.UserDefinedFunctions.Cast<UserDefinedFunction>().Where( oo => oo.IsSystemObject == false ) ) {
                     filePath = PrepareSqlFile( db.Name, o.Schema, "FUNCTION", o.Name, currentPath, "" );
                     WriteSQLInner<UserDefinedFunction>( db.Name, o.Schema, "FUNCTION", o.Name, filePath, o, ScriptOption.Default );
@@ -195,7 +195,7 @@ namespace mssqldump {
                 //TABLE
                 foreach ( Table o in db.Tables.Cast<Table>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
 
-                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TABLE" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, Pathify( "TABLE" ) );
                     filePath = PrepareSqlFile( db.Name, o.Schema, "TABLE", o.Name, currentPath, "" );
                     WriteSQLInner<Table>( db.Name, o.Schema, "TABLE", o.Name, filePath, o, ScriptOption.Default );
                     WriteSQLInner<Table>( db.Name, o.Schema, "TABLE", o.Name, filePath, o, ScriptOption.Indexes );
@@ -204,7 +204,7 @@ namespace mssqldump {
 
                     //////////////////////////////////////////////////////////////////////////
                     //TABLE TRIGGERS
-                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, Pathify( "TRIGGER" ) );
                     foreach ( Trigger ot in o.Triggers.Cast<Trigger>().AsQueryable().Where( oo => oo.IsSystemObject == false ) ) {
                         filePath = PrepareSqlFile( db.Name, o.Schema, "TRIGGER", ot.Name, currentPath, "TABLE_" + o.Name );
                         WriteSQLInner<Trigger>( db.Name, o.Schema, "TRIGGER", ot.Name, filePath, ot, ScriptOption.Default );
@@ -213,7 +213,7 @@ namespace mssqldump {
                     //////////////////////////////////////////////////////////////////////////
                     //TABLE STATISTICS
                     if ( ExportStatistics ) {
-                        currentPath = FileOperations.CreateFolder( dbPath, pathify( "STATISTIC" ) );
+                        currentPath = FileOperations.CreateFolder( dbPath, Pathify( "STATISTIC" ) );
                         foreach ( Statistic ot in o.Statistics.Cast<Statistic>().AsQueryable() ) {
                             filePath = PrepareSqlFile( db.Name, o.Schema, "STATISTIC", ot.Name, currentPath, "TABLE_" + o.Name );
                             WriteSQLInner<Statistic>( db.Name, o.Schema, "STATISTIC", ot.Name, filePath, ot, ScriptOption.OptimizerData );
@@ -225,7 +225,7 @@ namespace mssqldump {
                 //VIEWS
                 foreach ( View o in db.Views.Cast<View>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
 
-                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "VIEW" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, Pathify( "VIEW" ) );
                     filePath = PrepareSqlFile( db.Name, o.Schema, "VIEW", o.Name, currentPath, "" );
                     WriteSQLInner<View>( db.Name, o.Schema, "VIEW", o.Name, filePath, o, ScriptOption.Default );
                     WriteSQLInner<View>( db.Name, o.Schema, "VIEW", o.Name, filePath, o, ScriptOption.Indexes );
@@ -233,7 +233,7 @@ namespace mssqldump {
 
                     //////////////////////////////////////////////////////////////////////////
                     //VIEW TRIGGERS
-                    currentPath = FileOperations.CreateFolder( dbPath, pathify( "TRIGGER" ) );
+                    currentPath = FileOperations.CreateFolder( dbPath, Pathify( "TRIGGER" ) );
                     foreach ( Trigger ot in o.Triggers.Cast<Trigger>().AsQueryable().Where( oo => oo.IsSystemObject == false ) ) {
                         filePath = PrepareSqlFile( db.Name, o.Schema, "TRIGGER", ot.Name, currentPath, "VIEW_" + o.Name );
                         WriteSQLInner<Trigger>( db.Name, o.Schema, "TRIGGER", ot.Name, filePath, ot, ScriptOption.Default );
@@ -242,7 +242,7 @@ namespace mssqldump {
                     //////////////////////////////////////////////////////////////////////////
                     //VIEW STATISTICS
                     if ( ExportStatistics ) {
-                        currentPath = FileOperations.CreateFolder( dbPath, pathify( "STATISTIC" ) );
+                        currentPath = FileOperations.CreateFolder( dbPath, Pathify( "STATISTIC" ) );
                         foreach ( Statistic ot in o.Statistics.Cast<Statistic>().AsQueryable() ) {
                             filePath = PrepareSqlFile( db.Name, o.Schema, "STATISTIC", ot.Name, currentPath, "VIEW_" + o.Name );
                             WriteSQLInner<Statistic>( db.Name, o.Schema, "STATISTIC", ot.Name, filePath, ot, ScriptOption.OptimizerData );
@@ -257,7 +257,7 @@ namespace mssqldump {
 
             //Console.WriteLine( Environment.NewLine );
             Console.WriteLine( "Done!" );
-            //Console.ReadKey(); // Don't do this in *nixland
+            //Console.ReadKey(); // Don't do this in *nixland // TODO remove
 
         }
 
@@ -285,13 +285,13 @@ namespace mssqldump {
             Console.WriteLine( "     -u : username, defaults to sa" );
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
-            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" ); // TODO remove
             Console.WriteLine( "     -c : inert; no action; defaults to false" );
             Console.WriteLine( "     -s : Also export statistics, defaults to false" );
             Console.WriteLine( "     -a : Use DAC to try decrypt encrypted objects, defaults to false" );
             Console.WriteLine( "     -b : Comma separated value of databases to export, defaults to empty string" );
             Console.WriteLine("License: GPL-2.0");
-            Console.ReadKey();
+            //Console.ReadKey(); // Don't do this in *nixland // TODO remove
         }
         /// <summary>
         /// Reads the arguments.
@@ -340,13 +340,13 @@ namespace mssqldump {
                 }
             }
             catch (Exception ex) {
-                //Console.Clear(); // Don't do this in *nixland
+                //Console.Clear(); // Don't do this in *nixland // TODO remove
                 //Console.WriteLine( "ERROR!" ); // Unhelpful
                 Console.WriteLine( "You have an error in your arguments passed." );
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.TargetSite);
-                //Console.WriteLine( "Press any key to read help" );
+                //Console.WriteLine( "Press any key to read help" ); // TODO remove
                 //Console.ReadKey(); // Don't do this in *nixland
                 //Console.Clear(); // Don't do this in *nixland
                 WriteHelp();
@@ -424,7 +424,7 @@ namespace mssqldump {
         /// <param name="filePrefix">File prefix.</param>
         private static string PrepareSqlFile( string db, string schema, string objType, string objName, string objPath, string filePrefix ) {
             filePrefix = filePrefix != "" ? filePrefix + "_" : filePrefix;
-            var filePath = objPath + Path.DirectorySeparatorChar + pathify( filePrefix + objType + "_" + schema + "_" + objName ) + ".sql";
+            var filePath = objPath + Path.DirectorySeparatorChar + Pathify( filePrefix + objType + "_" + schema + "_" + objName ) + ".sql";
 
             return filePath;
         }
@@ -433,7 +433,7 @@ namespace mssqldump {
         /// </summary>
         /// <returns>The pathify.</returns>
         /// <param name="s">S.</param>
-        private static string pathify( string s ) {
+        private static string Pathify( string s ) {
             foreach ( var c in System.IO.Path.GetInvalidFileNameChars() )
                 s = s.Replace( c, '_' );
             return s;
