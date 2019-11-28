@@ -2,7 +2,10 @@
 //  DBOperations.cs
 //  Author:
 //       Cpasternack <Cpasternack@users.noreply.gitlab.com>
+//  Changes:
+//  Ported to mono develop from original files on 28/11/2019
 //
+// https://github.com/https://github.com/georgekosmidis/mssql-schema-dump
 //  Copyright (c) 2019 George Kosmidis
 //
 //  This program is free software; you can redistribute it and/or modify
