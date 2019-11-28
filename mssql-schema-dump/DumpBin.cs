@@ -38,15 +38,16 @@ using System.Security;
 namespace mssqldump {
     class DumpBin {
         
-        private static string HOST = "$HOST";
-        private static string USER = "sa";
-        private static string PASS = "";
+        private static string Host = "$HOST";
+        private static string Port = "1433";
+        private static string User = "sa";
+        private static string Pass = "";
         private static string SavePath = "/tmp/mssql-schema-dump/";
         //private static bool CleanDir = false; // TODO remove
         private static bool ExportStatistics = false;
         private static bool UseDAC = false;
         private static List<string> DBs = new List<string>();
-        private static DBOperations DB = new DBOperations( HOST, USER, PASS );
+        private static DBOperations DB = new DBOperations( Host, User, Pass );
 
         static void Main( string[] args ) {
             if ( args.Count() == 0 ) {
@@ -79,15 +80,17 @@ namespace mssqldump {
                     return;
                 }
                 // TODO create Identity object to pass
-                DB = new DBOperations( "ADMIN:" + HOST, USER, PASS );
+                DB = new DBOperations( "ADMIN:" + Host, User, Pass );
                 //Console.Clear(); // Don't do this in *nixland // TODO remove
             }
             // FIXME this sets the connection string, but doesn't set the credentials
-            var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS +
-                                       ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
-
+            //var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS +
+            //                           ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
+            var cn = new SqlConnection("packet size=4096;user id=" + User + ";Password=" + Pass +
+                                       ";data source=" + Host+","+ Port + ";persist security info=True;initial catalog=master;");
             try {
                 cn.Open();
+                // DEBUG
                 Console.WriteLine("SQL Connection test");
                 cn.Close();
             }
@@ -97,26 +100,29 @@ namespace mssqldump {
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.TargetSite);
-                Console.WriteLine( "(Server:" + HOST + ", User:" + USER + ", PASS: " +
-                                  PASS.Substring( 0, 1 ) + (new String( '*', PASS.Length - 2 )) + PASS.Substring( PASS.Count() - 1, 1 ) + ")" );
+                Console.WriteLine( "(Server:" + Host + ", User:" + User + ", PASS: " +
+                                  Pass.Substring( 0, 1 ) + (new String( '*', Pass.Length - 2 )) + Pass.Substring( Pass.Count() - 1, 1 ) + ")" );
                 //Console.ReadKey(); // Don't do this in *nixland // TODO remove
                 return;
             }
             // DEBUG 
             Console.WriteLine("SqlConnection ConnectionString=" + cn.ConnectionString);
+           
             // This fatal errors, when it can't find the SQLCredential form the SqlConnection
             // FIXME we use access tokens now
             var sc = new ServerConnection(cn);
+           
+            // DEBG 
             Console.WriteLine("SQL Server connection is open: "+sc.IsOpen);
             Server server;
             server = new Server(sc);
            
             //START
-            SavePath = FileOperations.CreateFolder( SavePath, Pathify( HOST ) );
+            SavePath = FileOperations.CreateFolder( SavePath, Pathify( Host ) );
 
             //SERVER
-            var filePath = PrepareSqlFile( "*", "", "SERVER", HOST, SavePath, "" );
-            WriteSQLInner<Server>( "*", "", "SERVER", HOST, filePath, server, ScriptOption.DriAll );
+            var filePath = PrepareSqlFile( "*", "", "SERVER", Host, SavePath, "" );
+            WriteSQLInner<Server>( "*", "", "SERVER", Host, filePath, server, ScriptOption.DriAll );
 
 
             // TODO break up into separate methods
@@ -318,17 +324,17 @@ namespace mssqldump {
                     switch ( args[i] ) {
                         case "-h":
                             if ( args[i + 1].Substring( 0, 1 ) != "-" )
-                                HOST = args[i + 1];
+                                Host = args[i + 1];
                             i++;
                             continue;
                         case "-u":
                             if ( args[i + 1].Substring( 0, 1 ) != "-" )
-                                USER = args[i + 1];
+                                User = args[i + 1];
                             i++;
                             continue;
                         case "-p":
                             if ( args[i + 1].Substring( 0, 1 ) != "-" )
-                                PASS = args[i + 1];
+                                Pass = args[i + 1];
                             i++;
                             continue;
                         case "-d":
