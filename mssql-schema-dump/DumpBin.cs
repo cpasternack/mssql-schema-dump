@@ -40,7 +40,7 @@ namespace mssqldump {
         
         private static string HOST = "$HOST";
         private static string USER = "sa";
-        private static string PASS = "sa";
+        private static string PASS = "";
         private static string SavePath = "/tmp/mssql-schema-dump/";
         //private static bool CleanDir = false; // TODO remove
         private static bool ExportStatistics = false;
@@ -286,9 +286,9 @@ namespace mssqldump {
             Console.WriteLine( "       mssqldump [-d path/for/files] [-c] [-s] [-a] [-b DB1[,DB2[,DB3]]]" );
             Console.WriteLine( "" );
             Console.WriteLine( "Options:" );
-            Console.WriteLine( "     -h : SQL server host, defaults to /tmp/mssql-schema-dump/" );
+            Console.WriteLine( "     -h : SQL server host, defaults to $HOST" );
             Console.WriteLine( "     -u : username, defaults to sa" );
-            Console.WriteLine( "     -p : password, defaults to sa" );
+            Console.WriteLine( "     -p : password, defaults to ''" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
             //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" ); // TODO remove
             Console.WriteLine( "     -c : inert; no action; depricated" );
