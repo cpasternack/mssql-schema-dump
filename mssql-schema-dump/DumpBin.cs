@@ -34,7 +34,7 @@ using System.Linq;
 using System.Threading;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
-
+using System.Security;
 namespace mssqldump {
     class DumpBin {
         
@@ -82,10 +82,13 @@ namespace mssqldump {
                 DB = new DBOperations( "ADMIN:" + HOST, USER, PASS );
                 //Console.Clear(); // Don't do this in *nixland // TODO remove
             }
+            // FIXME this sets the connection string, but doesn't set the credentials
             var cn = new SqlConnection( "packet size=4096;user id=" + USER + ";Password=" + PASS +
                                        ";data source=" + HOST + ";persist security info=True;initial catalog=master;" );
+
             try {
                 cn.Open();
+                Console.WriteLine("SQL Connection test");
                 cn.Close();
             }
             catch ( Exception ex ) {
@@ -99,9 +102,15 @@ namespace mssqldump {
                 //Console.ReadKey(); // Don't do this in *nixland // TODO remove
                 return;
             }
-            var sc = new ServerConnection( cn );
-            Server server = new Server( sc );
-
+            // DEBUG 
+            Console.WriteLine("SqlConnection ConnectionString=" + cn.ConnectionString);
+            // This fatal errors, when it can't find the SQLCredential form the SqlConnection
+            // FIXME we use access tokens now
+            var sc = new ServerConnection(cn);
+            Console.WriteLine("SQL Server connection is open: "+sc.IsOpen);
+            Server server;
+            server = new Server(sc);
+           
             //START
             SavePath = FileOperations.CreateFolder( SavePath, Pathify( HOST ) );
 
