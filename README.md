@@ -58,15 +58,7 @@ The code looks clean, easy to read, and is a great starting point. Let's improve
 
 ### Todo:
 
-  - continue extending case insensitive databases to include all collation possibilities
-    * ~~CS~~
-    * AS Accented (accented latin characters are used in my work)
-    * KS Kana (I work with non-latin alphabets)
-    * WS Width (I work with non-latin alphabets)
-    * UTF-8 encoded data (It's 2019, this was introduced in MS SQL Server 14 (2017))
-  - add jenkins file for use with build environment
-  - create library in addition to binary so we can call our tool from another programme
-  - dump out a nuget package for our internal nuget repo
+See TODO.md for list
 
 ### License
 
