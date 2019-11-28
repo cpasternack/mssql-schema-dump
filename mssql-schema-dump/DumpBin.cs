@@ -366,10 +366,11 @@ namespace MSSQLDump {
         /// <param name="o">O.</param>
         /// <param name="so">So.</param>
         /// <typeparam name="T">The 1st type parameter.</typeparam>
-        private static bool WriteSQLInner<T>( string db, string schema, string objType, string objName, string filePath, T o, ScriptingOptions so ) where T : SqlSmoObject {
-            if ( schema == "" )
-                schema = "dbo";
-            if ( db == "*" )
+        private static bool WriteSQLInner<T>( string db, string schema, string objType, string objName,
+                                             string filePath, T o, ScriptingOptions so ) where T : SqlSmoObject {
+            if ( schema == "" ) // FIXME string.equals
+                schema = "dbo"; // FIXME string.equals
+            if ( db == "*" ) // FIXME string.equals
                 Console.WriteLine( objType + ": " + objName );
             else
                 Console.WriteLine( objType + ": " + db + "." + schema + "." + objName + " (" + so.ToString() + ")" );
@@ -473,14 +474,17 @@ namespace MSSQLDump {
                     File.SetAttributes( file, FileAttributes.Normal );
                     File.Delete( file );
                 }
-                catch {
-                    Console.WriteLine( "ERROR!" );
-                    Console.WriteLine( "File '" + file + "' is locked." );
-                    Console.WriteLine( "R: Retry, any other key to exit" );
+                catch (Exception ex) {
+                    //Console.WriteLine( "ERROR!" ); // Unhelpful
+                    Console.WriteLine( "File '" + file + "' is locked." ); // Fail here
+                    //Console.WriteLine( "R: Retry, any other key to exit" ); // TODO remove
+                    Console.WriteLine(ex.Message);
+                    Console.WriteLine(ex.StackTrace);
+                    Console.WriteLine(ex.TargetSite);
 
-                    var k = Console.ReadKey();
-                    if ( k.Key.ToString().ToLower() == "r" )
-                        return DeleteDirectory( target_dir );
+                    //var k = Console.ReadKey(); // TODO remove
+                    //if ( k.Key.ToString().ToLower() == "r" ) // TODO remove
+                    //    return DeleteDirectory( target_dir ); // TODO remove
 
                     return false;
                 }
@@ -494,14 +498,17 @@ namespace MSSQLDump {
             try {
                 Directory.Delete( target_dir, false );
             }
-            catch {
-                Console.WriteLine( "ERROR!" );
+            catch (Exception ex){
+                //Console.WriteLine( "ERROR!" ); // Unhelpful
                 Console.WriteLine( "Directory '" + target_dir + "' is locked." );
-                Console.WriteLine( "R: Retry, any other key to exit" );
+                //Console.WriteLine( "R: Retry, any other key to exit" ); // TODO remove
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+                Console.WriteLine(ex.TargetSite);
 
-                var k = Console.ReadKey();
-                if ( k.Key.ToString().ToLower() == "r" )
-                    return DeleteDirectory( target_dir );
+                //var k = Console.ReadKey(); // TODO remove
+                //if ( k.Key.ToString().ToLower() == "r" ) // TODO remove
+                //    return DeleteDirectory( target_dir ); // TODO remove
 
                 return false;
             }
