@@ -88,13 +88,13 @@ namespace mssqldump {
                 cn.Close();
             }
             catch ( Exception ex ) {
-                //Console.Clear(); // Do not clear any console in *nixland
-                //Console.WriteLine( "ERROR!" ); // Unhelpful
+                //Console.Clear(); // Do not clear any console in *nixland // TODO remove
+                //Console.WriteLine( "ERROR!" ); // Unhelpful // TODO remove
                 Console.WriteLine(ex.Message);
                 Console.WriteLine(ex.StackTrace);
                 Console.WriteLine(ex.TargetSite);
                 Console.WriteLine( "(Server:" + HOST + ", User:" + USER + ", PASS: " + PASS.Substring( 0, 1 ) + (new String( '*', PASS.Length - 2 )) + PASS.Substring( PASS.Count() - 1, 1 ) + ")" );
-                //Console.ReadKey(); // Don't do this in *nixland
+                //Console.ReadKey(); // Don't do this in *nixland // TODO remove
                 return;
             }
             var sc = new ServerConnection( cn );
@@ -106,6 +106,9 @@ namespace mssqldump {
             //SERVER
             var filePath = PrepareSqlFile( "*", "", "SERVER", HOST, SavePath, "" );
             WriteSQLInner<Server>( "*", "", "SERVER", HOST, filePath, server, ScriptOption.DriAll );
+
+
+            // TODO break up into separate methods
 
             foreach ( var db in server.Databases.Cast<Database>().AsQueryable().Where( o => o.IsSystemObject == false ) ) {
                 if ( db.IsSystemObject )
@@ -460,6 +463,7 @@ namespace mssqldump {
             s += "--****************************************************" + Environment.NewLine + Environment.NewLine;
             return s;
         }
+        // FIXME cyclical referrence
         /// <summary>
         /// Deletes the directory.
         /// </summary>
@@ -475,7 +479,7 @@ namespace mssqldump {
                     File.Delete( file );
                 }
                 catch (Exception ex) {
-                    //Console.WriteLine( "ERROR!" ); // Unhelpful
+                    //Console.WriteLine( "ERROR!" ); // Unhelpful // TODO remove
                     Console.WriteLine( "File '" + file + "' is locked." ); // Fail here
                     //Console.WriteLine( "R: Retry, any other key to exit" ); // TODO remove
                     Console.WriteLine(ex.Message);
@@ -489,10 +493,10 @@ namespace mssqldump {
                     return false;
                 }
             }
-            Thread.Sleep( 200 );
+            Thread.Sleep( 200 ); // FIXME magic number
 
             foreach ( string dir in dirs ) {
-                var b = DeleteDirectory( dir );
+                var b = DeleteDirectory( dir ); // FIXME why is this recursive?
             }
 
             try {
