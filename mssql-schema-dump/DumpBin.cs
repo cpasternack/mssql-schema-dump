@@ -281,7 +281,7 @@ namespace MSSQLDump {
             Console.WriteLine( "     -p : password, defaults to sa" );
             Console.WriteLine( "     -d : Local path for saved files, defaults to C:\\_SQL_SCHEMA_DUMP\\" );
             //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
-            //Console.WriteLine( "     -c : Delete all files and folders from local path, defaults to false" );
+            Console.WriteLine( "     -c : inert; no action; defaults to false" );
             Console.WriteLine( "     -s : Also export statistics, defaults to false" );
             Console.WriteLine( "     -a : Use DAC to try decrypt encrypted objects, defaults to false" );
             Console.WriteLine( "     -b : Comma separated value of databases to export, defaults to empty string" );
@@ -396,7 +396,7 @@ namespace MSSQLDump {
                     ts += s + Environment.NewLine;
                 if ( !String.IsNullOrWhiteSpace( ts.Trim() ) ) {
                     if ( !File.Exists( filePath ) )
-                        FileOperations.writeFile( filePath, sqlComments( db, schema, objType, objName ), true );
+                        FileOperations.writeFile( filePath, SqlComments( db, schema, objType, objName ), true );
                     FileOperations.writeFile( filePath, ts + ";" + Environment.NewLine, true );
                 }
             }
@@ -437,7 +437,7 @@ namespace MSSQLDump {
         /// <param name="schema">Schema.</param>
         /// <param name="type">Type.</param>
         /// <param name="name">Name.</param>
-        private static string sqlComments( string db, string schema, string type, string name ) {
+        private static string SqlComments( string db, string schema, string type, string name ) {
             var s = "--****************************************************" + Environment.NewLine;
             s += "--MS SQL schema dump v1.1.1" + Environment.NewLine;
             s += "--Mono Runtime port by Cpasternack" + Environment.NewLine;
