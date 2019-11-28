@@ -333,7 +333,7 @@ namespace MSSQLDump {
                             continue;
                         case "-b":
                             if ( args[i + 1].Substring( 0, 1 ) != "-" ) {
-                                DBs = args[i + 1].Split( ',' ).ToList<string>().ConvertAll( d => d.ToLower() );
+                                DBs = args[i + 1].Split( ',' ).ToList<string>().ConvertAll( d => d.ToLowerInvariant());
                             }
                             continue;
                     }
