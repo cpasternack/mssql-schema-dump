@@ -58,6 +58,9 @@ I have a fair few applications ported from .NET on MSVS and Windows to mono runt
 
 The code looks clean, easy to read, and is a great starting point. Let's improve on that!
 
+There are some rather big changes with MSSQL 2019 
+https://docs.microsoft.com/en-us/sql/relational-databases/server-management-objects-smo/installing-smo?view=sql-server-ver15
+
 ### Todo:
 
 See TODO.md for list
@@ -78,3 +81,5 @@ GPL-2.0, See: LICENSE file
   - added xmldoc comments
   - added license to file hearders
   - re-created solution files with mono Develop latest
+  - Removed System.Data.SqlClient
+  - Added Microsoft.SqlServer.SqlManagement
