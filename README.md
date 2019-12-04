@@ -50,6 +50,11 @@ Options:
 
 ## Updates:
 
+12/2019:
+And we are into mono and .net framework/CORE compatibility issues with the latest MSSQL server! Key server management methods are not
+implemented in either System.Data.SqlClient, Microsoft.Data.SqlClient, or Microsoft.SqlServer.Management
+
+
 11/2019:
 This programme was written nearly 5-7 years ago now by the original author. 
 I needed a quick and dirty sql dumper without using MSSQL management studio from windows, now that MS SQL Server runs on linux.
@@ -70,6 +75,12 @@ See TODO.md for list
 GPL-2.0, See: LICENSE file 
 
 ### Changelog:
+
+12/2019
+  - Changed references to Microsoft.SqlServer.Management, Microsoft.Data.SqlClient in NuGet
+  - Moving development from Mono 5.10 to Mono 6.4
+  - Moving development tool from flatpak Monodevelop 7.3 to Monodevelop 7.6
+  - Additionally using VS Code on Linux with .NET CORE 3.x SDK for testing Management code
 
 11/2019
   - removed binaries in top level repo
